@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name="author" content="mizoki" />
+  <meta name="date" content="2015-09-21" />
+  <title>普段使っているMacの調子が悪くなったので、WindowsでRubyの開発環境を整える</title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <link rel="stylesheet" type="text/css" media="screen, projection, print"
+    href="http://www.w3.org/Talks/Tools/Slidy2/styles/slidy.css" />
+  <script src="http://www.w3.org/Talks/Tools/Slidy2/scripts/slidy.js"
+    charset="utf-8" type="text/javascript"></script>
+</head>
+<body>
+<div class="slide titlepage">
+  <h1 class="title">普段使っているMacの調子が悪くなったので、WindowsでRubyの開発環境を整える</h1>
+  <p class="author">
+mizoki
+  </p>
+  <p class="date">September 21, 2015</p>
+</div>
+<div id="macの調子が悪くなったのでwindowsでrubyの開発環境を整える" class="slide section level1">
+<h1>Macの調子が悪くなったので、WindowsでRubyの開発環境を整える</h1>
+<p>普段はMacを使って、開発をしていますが、Macの調子が悪くなってきたので、予備のWindowsに環境を構築しました。</p>
+<p>今回使用するソフトウェアは以下のとおりです。</p>
+<ul>
+<li>
+Ansible
+</li>
+<li>
+git
+</li>
+<li>
+Virtualbox
+</li>
+<li>
+Vagrant
+</li>
+</ul>
+</div>
+<div id="ソフトウェアのインストール" class="slide section level1">
+<h1>ソフトウェアのインストール</h1>
+<p>以下のソフトウェアを公式サイトからダウンロードしてインストールします。</p>
+<ul>
+<li>
+Git
+</li>
+<ul>
+<li>
+<a href="http://git-scm.com/" class="uri">http://git-scm.com/</a>
+</li>
+</ul>
+<li>
+Virtualboxのインストール
+</li>
+<ul>
+<li>
+<a href="https://www.virtualbox.org/wiki/Downloads" class="uri">https://www.virtualbox.org/wiki/Downloads</a>
+</li>
+</ul>
+<li>
+Vagrant
+</li>
+<ul>
+<li>
+<a href="https://www.vagrantup.com/" class="uri">https://www.vagrantup.com/</a>
+</li>
+</ul>
+</ul>
+</div>
+<div id="各ソフトウェアの役割" class="slide section level1">
+<h1>各ソフトウェアの役割</h1>
+<h2 id="ansible">Ansible</h2>
+<p>環境の構築に利用する</p>
+<h2 id="git">Git</h2>
+<p>Ansibleの設定ファイルのバージョン管理と<code>Git Bash</code>からsshを使用するために利用する</p>
+<h2 id="virtualbox-vagrant">Virtualbox, Vagrant</h2>
+<p>仮想マシンの構築に利用する</p>
+<pre class="shell"><code>$ vagrant up      # 仮想マシンの起動
+
+$ vagrant ssh     # 仮想マシンへsshで接続
+
+$ vagrant halt    # 仮想マシンのシャットダウン
+
+$ vagrant destroy # 仮想マシンの削除</code></pre>
+</div>
+<div id="ansibleの構成" class="slide section level1">
+<h1>Ansibleの構成</h1>
+<p>使用するAnsibleのplaybookの構成は以下のとおりです。</p>
+<ul>
+<li>
+<a href="https://github.com/mizoki/ansible-playbook" class="uri">https://github.com/mizoki/ansible-playbook</a>
+</li>
+</ul>
+<pre><code>ansible-playbook
+├── README.md
+├── vagrant-centos
+│   ├── hosts
+│   ├── playbook.yml
+│   └── roles
+│       ├── common
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── ghq
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── git
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── haskell
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── peco
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── ruby
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── slidy-builder
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── tig
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── tmux
+│       │   └── tasks
+│       │       └── main.yml
+│       ├── vim
+│       │   └── tasks
+│       │       └── main.yml
+│       └── zsh
+│           └── tasks
+│               └── main.yml
+└── virtualbox
+    └── centos
+            └── Vagrantfile</code></pre>
+</div>
+<div id="vagrantfile" class="slide section level1">
+<h1>Vagrantfile</h1>
+<p>仮想マシンの設定は以下のとおりです。</p>
+<p>今回はCentOS 7を利用します。</p>
+<p>本来、Ansibleはローカルからsshで接続できれば、設定される側には何もインストールする必要がありませんが、pythonを入れたりするのが面倒なので、CentOSにAnsibleをインストールして、自分で自分の設定をしてもらいます。</p>
+<p>そのために、Windows側のAnsibleの設定ファイルがCentOSからも見えるように、共有フォルダの設定を行っています。</p>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># -*- mode: ruby -*-</span>
+<span class="co"># vi: set ft=ruby :</span>
+
+<span class="dt">Vagrant</span>.configure(<span class="dv">2</span>) <span class="kw">do</span> |config|
+  <span class="co"># Every Vagrant development environment requires a box. You can search for</span>
+  <span class="co"># boxes at https://atlas.hashicorp.com/search.</span>
+  config.vm.box = <span class="st">&quot;puppetlabs/centos-7.0-64-nocm&quot;</span>
+
+  <span class="co"># Create a private network, which allows host-only access to the machine</span>
+  <span class="co"># using a specific IP.</span>
+  config.vm.network <span class="st">&quot;private_network&quot;</span>, <span class="st">ip: &quot;192.168.33.10&quot;</span>
+
+  <span class="co"># Share an additional folder to the guest VM. The first argument is</span>
+  <span class="co"># the path on the host to the actual folder. The second argument is</span>
+  <span class="co"># the path on the guest to mount the folder. And the optional third</span>
+  <span class="co"># argument is a set of non-required options.</span>
+  <span class="co"># config.vm.synced_folder &quot;../data&quot;, &quot;/vagrant_data&quot;</span>
+  config.vm.synced_folder <span class="st">&quot;../../vagrant-centos&quot;</span>, <span class="st">&quot;/ansible&quot;</span>, <span class="st">mount_options: </span>[<span class="st">&quot;dmode=755&quot;</span>,<span class="st">&quot;fmode=644&quot;</span>]
+
+  <span class="co"># Enable provisioning with a shell script. Additional provisioners such as</span>
+  <span class="co"># Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the</span>
+  <span class="co"># documentation for more information about their specific syntax and use.</span>
+  config.vm.provision <span class="st">&quot;shell&quot;</span>, <span class="st">inline: </span>&lt;&lt;-<span class="kw">SHELL</span>
+<span class="ot">    if ! [ `which ansible` ]; then</span>
+<span class="ot">      yum update -y</span>
+<span class="ot">      yum install -y epel-release</span>
+<span class="ot">      yum install -y ansible</span>
+<span class="ot">    fi</span>
+<span class="ot">    ansible-playbook -i /ansible/hosts /ansible/playbook.yml</span>
+<span class="ot">  </span><span class="kw">SHELL</span>
+<span class="kw">end</span></code></pre></div>
+</div>
+<div id="ansibleの設定" class="slide section level1">
+<h1>Ansibleの設定</h1>
+<h2 id="playbook.yml">playbook.yml</h2>
+<div class="sourceCode"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span class="kw">-</span> <span class="fu">hosts:</span> 127.0.0.1
+  <span class="fu">connection:</span> local
+  <span class="fu">sudo:</span> yes
+  <span class="fu">roles:</span>
+    <span class="kw">-</span> common
+    <span class="kw">-</span> ghq
+    <span class="kw">-</span> git
+    <span class="kw">-</span> haskell
+    <span class="kw">-</span> peco
+    <span class="kw">-</span> ruby
+    <span class="kw">-</span> slidy-builder
+    <span class="kw">-</span> tig
+    <span class="kw">-</span> tmux
+    <span class="kw">-</span> vim
+    <span class="kw">-</span> zsh</code></pre></div>
+<h2 id="hosts">hosts</h2>
+<pre><code>127.0.0.1 ansible_connection=local</code></pre>
+</div>
+<div id="rolescommontasksmain.yml" class="slide section level1">
+<h1>roles/common/tasks/main.yml</h1>
+<p>rolesの中身をいくつか紹介します。</p>
+<div class="sourceCode"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span class="kw">-</span> <span class="fu">name:</span> system update
+  <span class="fu">yum:</span> name=* state=latest      <span class="co"># nameにアスタリスクを指定するとyum updateを実行する</span>
+
+<span class="kw">-</span> <span class="fu">name:</span> install some package for development
+  <span class="fu">yum:</span> name={{item}} state=latest
+  <span class="fu">with_items:</span>
+    <span class="kw">-</span> autoconf
+    <span class="kw">-</span> automake
+    <span class="kw">-</span> curl-devel
+    <span class="kw">-</span> expat-devel
+    <span class="kw">-</span> gettext
+    <span class="kw">-</span> gettext-devel
+    <span class="kw">-</span> gpm-libs
+    <span class="kw">-</span> libacl-devel
+    <span class="kw">-</span> libevent
+    <span class="kw">-</span> libevent-devel
+    <span class="kw">-</span> lua
+    <span class="kw">-</span> lua-devel
+    <span class="kw">-</span> ncurses
+    <span class="kw">-</span> ncurses-devel
+    <span class="kw">-</span> ncurses-libs
+    <span class="kw">-</span> openssl-devel
+    <span class="kw">-</span> pcre
+    <span class="kw">-</span> pcre-devel
+    <span class="kw">-</span> perl-ExtUtils-Embed
+    <span class="kw">-</span> perl-core
+    <span class="kw">-</span> perl-libs
+    <span class="kw">-</span> python-devel
+    <span class="kw">-</span> ruby
+    <span class="kw">-</span> ruby-devel
+    <span class="kw">-</span> unzip
+    <span class="kw">-</span> zlib-devel
+    <span class="kw">-</span> git
+    <span class="kw">-</span> colordiff
+    <span class="kw">-</span> nkf
+
+<span class="kw">-</span> <span class="fu">name:</span> clone repository of luajit
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">git:</span>
+    <span class="fu">repo:</span> http://luajit.org/git/luajit-2.0.git
+    <span class="fu">dest:</span> /home/vagrant/local/src/luajit-2.0
+
+<span class="kw">-</span> <span class="fu">name:</span> build luajit
+  <span class="fu">shell:</span> make &amp;&amp; make install
+  <span class="fu">args:</span>
+    <span class="fu">chdir:</span> /home/vagrant/local/src/luajit-2.0
+
+<span class="kw">-</span> <span class="fu">name:</span> clone repository of my dotfiles
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">git:</span>
+    <span class="fu">repo:</span> https://github.com/mizoki/dotfiles.git
+    <span class="fu">dest:</span> /home/vagrant/repos/github.com/mizoki/dotfiles
+
+<span class="kw">-</span> <span class="fu">name:</span> check zshrc
+  <span class="fu">shell:</span> test -f /home/vagrant/.zshrc
+  <span class="fu">register:</span> result
+  <span class="fu">ignore_errors:</span> true
+  <span class="fu">changed_when:</span> false
+
+<span class="kw">-</span> <span class="fu">name:</span> add symbolic link of my dotfiles
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">shell:</span> /home/vagrant/repos/github.com/mizoki/dotfiles/setup.sh
+  <span class="fu">when:</span> result|failed
+  <span class="fu">args:</span>
+    <span class="fu">chdir:</span> /home/vagrant/repos/github.com/mizoki/dotfiles
+
+<span class="kw">-</span> <span class="fu">name:</span> check setting of $PATH
+  <span class="fu">shell:</span> cat /home/vagrant/.zshenv | grep -q &#39;export PATH=/home/vagrant/local/bin:$PATH&#39;
+  <span class="fu">register:</span> result
+  <span class="fu">ignore_errors:</span> true
+  <span class="fu">changed_when:</span> false
+
+<span class="kw">-</span> <span class="fu">name:</span> set environment variable ($PATH)
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">shell:</span> echo &#39;export PATH=/home/vagrant/local/bin:$PATH&#39; &gt;&gt; /home/vagrant/.zshenv
+  <span class="fu">when:</span> result|failed
+
+<span class="kw">-</span> <span class="fu">name:</span> check setting of timezone
+  <span class="fu">shell:</span> test -f /etc/localtime
+  <span class="fu">register:</span> result
+  <span class="fu">ignore_errors:</span> true
+  <span class="fu">changed_when:</span> false
+
+<span class="kw">-</span> <span class="fu">name:</span> set timezone
+  <span class="fu">shell:</span> ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+  <span class="fu">when:</span> result|failed</code></pre></div>
+</div>
+<div id="rolesvimtasksmain.yml" class="slide section level1">
+<h1>roles/vim/tasks/main.yml</h1>
+<p>次にこれがなければ何もできないという超重要なソフトウェアであるvimの設定です。</p>
+<div class="sourceCode"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span class="kw">-</span> <span class="fu">name:</span> clone repository of vim
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">git:</span>
+    <span class="fu">repo:</span> https://github.com/vim/vim.git
+    <span class="fu">dest:</span> /home/vagrant/repos/github.com/vim/vim
+
+<span class="kw">-</span> <span class="fu">name:</span> build vim
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">shell:</span> |
+    ./configure \
+      <span class="kw">-</span>-with-features=huge \
+      <span class="kw">-</span>-with-compiledby=<span class="st">&quot;mizoki &lt;h.mizoki@gmail.com&gt;&quot;</span> \
+      <span class="kw">-</span>-prefix=/home/vagrant/local \
+      <span class="kw">-</span>-with-x \
+      <span class="kw">-</span>-with-gnome \
+      <span class="kw">-</span>-enable-xim \
+      <span class="kw">-</span>-enable-fail-if-missing \
+      <span class="kw">-</span>-enable-luainterp=yes \
+      <span class="kw">-</span>-enable-perlinterp=yes \
+      <span class="kw">-</span>-enable-pythoninterp=yes \
+      <span class="kw">-</span>-enable-rubyinterp=yes \
+      <span class="kw">-</span>-with-lua-prefix=/usr \
+      <span class="kw">-</span>-with-luajit \
+      <span class="kw">-</span>-enable-multibyte
+    make
+    make install
+    make clean
+  <span class="fu">args:</span>
+    <span class="fu">chdir:</span> /home/vagrant/repos/github.com/vim/vim
+
+<span class="kw">-</span> <span class="fu">name:</span> add loading setting of luajit
+  <span class="fu">shell:</span> |
+    echo <span class="st">&quot;/usr/local/lib/&quot;</span> &gt; /etc/ld.so.conf.d/luajit.conf
+    ldconfig
+
+<span class="kw">-</span> <span class="fu">name:</span> clone repository of neobundle.vim
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">git:</span>
+    <span class="fu">repo:</span> https://github.com/Shougo/neobundle.vim.git
+    <span class="fu">dest:</span> /home/vagrant/.vim/bundle/neobundle.vim</code></pre></div>
+</div>
+<div id="はまったところ" class="slide section level1">
+<h1>はまったところ</h1>
+<h2 id="windowsでは共有フォルダへのアクセス権が777になる">Windowsでは、共有フォルダへのアクセス権が777になる</h2>
+<p><code>hosts</code>ファイルに実行権限があると、Ansibleの実行時にエラーになる。</p>
+<pre class="shell"><code>    ansible-playbook -i /ansible/hosts /ansible/playbook.yml</code></pre>
+<h3 id="解決策">解決策</h3>
+<p>共有フォルダの指定時に<code>mount_options</code>を指定して、アクセス権を設定する</p>
+<h4 id="maclinuxならこれでok">Mac（Linux）ならこれでOK</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">  config.vm.synced_folder <span class="st">&quot;../../vagrant-centos&quot;</span>, <span class="st">&quot;/ansible&quot;</span></code></pre></div>
+<h4 id="windowsの場合">Windowsの場合</h4>
+<div class="sourceCode"><pre class="sourceCode ruby"><code class="sourceCode ruby">  config.vm.synced_folder <span class="st">&quot;../../vagrant-centos&quot;</span>, <span class="st">&quot;/ansible&quot;</span>, <span class="st">mount_options: </span>[<span class="st">&quot;dmode=755&quot;</span>,<span class="st">&quot;fmode=644&quot;</span>]</code></pre></div>
+</div>
+<div class="slide section level1">
+
+<h2 id="vagrant-upでmountエラーが発生する">vagrant upでmountエラーが発生する</h2>
+<p>2回目以降の、<code>vagrant up</code>の実行時に以下のエラーが発生する</p>
+<pre><code>Failed to mount folders in Linux guest. This is usually because
+the &quot;vboxsf&quot; file system is not available. Please verify that
+the guest additions are properly installed in the guest and
+can work properly. The command attempted was:
+
+mount -t vboxsf -o uid=`id -u vagrant`,gid=`getent group vagrant | cut -d: -f3`,dmode=755,fmode=644 ansible /ansible
+mount -t vboxsf -o uid=`id -u vagrant`,gid=`id -g vagrant`,dmode=755,fmode=644 ansible /ansible
+
+The error output from the last command was:
+
+/sbin/mount.vboxsf: mounting failed with the error: No such device</code></pre>
+<h3 id="解決策-1">解決策</h3>
+<ul>
+<li>
+vagrantでmountエラーの解決方法 - Qiita
+</li>
+<ul>
+<pre><code>&lt;li&gt;[http://qiita.com/osamu1203/items/10e19c74c912d303ca0b](http://qiita.com/osamu1203/items/10e19c74c912d303ca0b)&lt;/li&gt;</code></pre>
+</ul>
+</ul>
+<h4 id="ホストマシンのシェル">ホストマシンのシェル</h4>
+<pre class="shell"><code>$ vagrant ssh</code></pre>
+<h4 id="仮想マシンのシェル">仮想マシンのシェル</h4>
+<p>vboxのリビルドを行う</p>
+<pre class="shell"><code>$ sudo /etc/init.d/vboxadd setup</code></pre>
+<h4 id="仮想マシンの再起動">仮想マシンの再起動</h4>
+<pre class="shell"><code>$ vagrant halt
+$ vagrant up</code></pre>
+<p>もしくは</p>
+<pre class="shell"><code>$ vagrant reload</code></pre>
+</div>
+<div id="todo" class="slide section level1">
+<h1>TODO</h1>
+<ul class="incremental">
+<li>リポジトリのクローン時に変更がなかった場合は、ビルドしたくない</li>
+<li>ユーザー名やgitリポジトリのクローン先を変数にして、VPSなどVagrant以外のセットアップにも使えるようにしたい</li>
+<li>Serverspecで構成をテストしたい</li>
+<li>特に時間短縮のためにも、ビルドしなくていいときにはビルドしないようにしたいけれど、誰かいい方法を知っていたら教えてください。</li>
+</ul>
+</div>
+<div id="まとめ" class="slide section level1">
+<h1>まとめ</h1>
+<p>今回は、今までシェルスクリプトでやっていたことを、単純に置き換えただけのものです。</p>
+<p>Ansibleはもっと色々なことができるみたいなので、もっと設定を詰めていきたいです。</p>
+<p>ですが、これだけでもWindowsでも簡単に開発が始められるようになりました。</p>
+</div>
+<div class="slide section level1">
+
+<p>ただ、今日持ってきたPCは、Arch Linuxとのデュアルブートで普段はMacとArch Linuxを使ってます。</p>
+</div>
+<div class="slide section level1">
+
+<p>ご清聴ありがとうございました。</p>
+</div>
+</body>
+</html>
+<!-- Pandoc version:
+pandoc 1.15.0.6
+Compiled with texmath 0.8.3, highlighting-kate 0.6.
+Syntax highlighting is supported for the following languages:
+    abc, actionscript, ada, agda, apache, asn1, asp, awk, bash, bibtex, boo, c,
+    changelog, clojure, cmake, coffee, coldfusion, commonlisp, cpp, cs, css,
+    curry, d, diff, djangotemplate, dockerfile, dot, doxygen, doxygenlua, dtd,
+    eiffel, email, erlang, fasm, fortran, fsharp, gcc, glsl, gnuassembler, go,
+    haskell, haxe, html, idris, ini, isocpp, java, javadoc, javascript, json,
+    jsp, julia, kotlin, latex, lex, lilypond, literatecurry, literatehaskell,
+    lua, m4, makefile, mandoc, markdown, mathematica, matlab, maxima, mediawiki,
+    metafont, mips, modelines, modula2, modula3, monobasic, nasm, noweb,
+    objectivec, objectivecpp, ocaml, octave, opencl, pascal, perl, php, pike,
+    postscript, prolog, pure, python, r, relaxng, relaxngcompact, rest, rhtml,
+    roff, ruby, rust, scala, scheme, sci, sed, sgml, sql, sqlmysql,
+    sqlpostgresql, tcl, tcsh, texinfo, verilog, vhdl, xml, xorg, xslt, xul,
+    yacc, yaml, zsh
+Default user data directory: <DELETED>
+Copyright (C) 2006-2015 John MacFarlane
+Web:  http://pandoc.org
+This is free software; see the source for copying conditions.
+There is no warranty, not even for merchantability or fitness
+for a particular purpose.
+-->
