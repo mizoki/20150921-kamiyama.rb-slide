@@ -26,7 +26,7 @@ date: September 21, 2015
   <ul>
   <li>[http://git-scm.com/](http://git-scm.com/)</li>
   </ul>
-  <li>Virtualboxのインストール</li>
+  <li>Virtualbox</li>
   <ul>
   <li>[https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)</li>
   </ul>
@@ -383,7 +383,7 @@ The error output from the last command was:
 <ul>
   <li>vagrantでmountエラーの解決方法 - Qiita</li>
   <ul>
-    <li>[http://qiita.com/osamu1203/items/10e19c74c912d303ca0b](http://qiita.com/osamu1203/items/10e19c74c912d303ca0b)</li>
+  <li>[http://qiita.com/osamu1203/items/10e19c74c912d303ca0b](http://qiita.com/osamu1203/items/10e19c74c912d303ca0b)</li>
   </ul>
 </ul>
 
