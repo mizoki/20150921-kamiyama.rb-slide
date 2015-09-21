@@ -96,7 +96,7 @@ Virtualbox
 </li>
 <ul>
 <li>
-<a href="https://www.virtualbox.org/wiki/Downloads" class="uri">https://www.virtualbox.org/wiki/Downloads</a>
+<a href="https://www.virtualbox.org/" class="uri">https://www.virtualbox.org/</a>
 </li>
 </ul>
 <li>
@@ -186,24 +186,19 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
 <span class="co"># vi: set ft=ruby :</span>
 
 <span class="dt">Vagrant</span>.configure(<span class="dv">2</span>) <span class="kw">do</span> |config|
-  <span class="co"># Every Vagrant development environment requires a box. You can search for</span>
-  <span class="co"># boxes at https://atlas.hashicorp.com/search.</span>
+  <span class="co"># CentOS 7を利用</span>
+  <span class="co"># https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm</span>
   config.vm.box = <span class="st">&quot;puppetlabs/centos-7.0-64-nocm&quot;</span>
 
-  <span class="co"># Create a private network, which allows host-only access to the machine</span>
-  <span class="co"># using a specific IP.</span>
-  config.vm.network <span class="st">&quot;private_network&quot;</span>, <span class="st">ip: &quot;192.168.33.10&quot;</span>
-
-  <span class="co"># Share an additional folder to the guest VM. The first argument is</span>
-  <span class="co"># the path on the host to the actual folder. The second argument is</span>
-  <span class="co"># the path on the guest to mount the folder. And the optional third</span>
-  <span class="co"># argument is a set of non-required options.</span>
-  <span class="co"># config.vm.synced_folder &quot;../data&quot;, &quot;/vagrant_data&quot;</span>
+  <span class="co"># WindowsからAnsibleの設定ファイルが見えるように共有フォルダを設定する</span>
   config.vm.synced_folder <span class="st">&quot;../../vagrant-centos&quot;</span>, <span class="st">&quot;/ansible&quot;</span>, <span class="st">mount_options: </span>[<span class="st">&quot;dmode=755&quot;</span>,<span class="st">&quot;fmode=644&quot;</span>]
 
-  <span class="co"># Enable provisioning with a shell script. Additional provisioners such as</span>
-  <span class="co"># Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the</span>
-  <span class="co"># documentation for more information about their specific syntax and use.</span>
+  <span class="co"># 標準でメモリが512MBしかないので、4GBに変更</span>
+  config.vm.provider <span class="st">&quot;virtualbox&quot;</span> <span class="kw">do</span> |vb|
+    vb.memory = <span class="st">&quot;4096&quot;</span>
+  <span class="kw">end</span>
+
+  <span class="co"># AnsibleのインストールとAnsibleの実行</span>
   config.vm.provision <span class="st">&quot;shell&quot;</span>, <span class="st">inline: </span>&lt;&lt;-<span class="kw">SHELL</span>
 <span class="ot">    if ! [ `which ansible` ]; then</span>
 <span class="ot">      yum update -y</span>
@@ -214,8 +209,8 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
 <span class="ot">  </span><span class="kw">SHELL</span>
 <span class="kw">end</span></code></pre></div>
 </div>
-<div id="ansibleの設定" class="slide section level1">
-<h1>Ansibleの設定</h1>
+<div id="ansibleの設定ファイル" class="slide section level1">
+<h1>Ansibleの設定ファイル</h1>
 <h2 id="playbook.yml">playbook.yml</h2>
 <div class="sourceCode"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span class="kw">-</span> <span class="fu">hosts:</span> 127.0.0.1
   <span class="fu">connection:</span> local
@@ -280,11 +275,13 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
   <span class="fu">git:</span>
     <span class="fu">repo:</span> http://luajit.org/git/luajit-2.0.git
     <span class="fu">dest:</span> /home/vagrant/local/src/luajit-2.0
+  <span class="fu">register:</span> result
 
 <span class="kw">-</span> <span class="fu">name:</span> build luajit
   <span class="fu">shell:</span> make &amp;&amp; make install
   <span class="fu">args:</span>
     <span class="fu">chdir:</span> /home/vagrant/local/src/luajit-2.0
+  <span class="fu">when:</span> result|changed
 
 <span class="kw">-</span> <span class="fu">name:</span> clone repository of my dotfiles
   <span class="fu">become:</span> yes
@@ -296,8 +293,8 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
 <span class="kw">-</span> <span class="fu">name:</span> check zshrc
   <span class="fu">shell:</span> test -f /home/vagrant/.zshrc
   <span class="fu">register:</span> result
-  <span class="fu">ignore_errors:</span> true
-  <span class="fu">changed_when:</span> false
+  <span class="fu">ignore_errors:</span> true <span class="co"># エラーでも処理を中断しない</span>
+  <span class="fu">changed_when:</span> false <span class="co"># ステータスがchangedになる条件の指定(falseの場合は常にokになる)</span>
 
 <span class="kw">-</span> <span class="fu">name:</span> add symbolic link of my dotfiles
   <span class="fu">become:</span> yes
@@ -305,7 +302,7 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
   <span class="fu">shell:</span> /home/vagrant/repos/github.com/mizoki/dotfiles/setup.sh
   <span class="fu">when:</span> result|failed
   <span class="fu">args:</span>
-    <span class="fu">chdir:</span> /home/vagrant/repos/github.com/mizoki/dotfiles
+    <span class="fu">chdir:</span> /home/vagrant/repos/github.com/mizoki/dotfiles   <span class="co"># カレントディレクトリの変更</span>
 
 <span class="kw">-</span> <span class="fu">name:</span> check setting of $PATH
   <span class="fu">shell:</span> cat /home/vagrant/.zshenv | grep -q &#39;export PATH=/home/vagrant/local/bin:$PATH&#39;
@@ -338,6 +335,7 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
   <span class="fu">git:</span>
     <span class="fu">repo:</span> https://github.com/vim/vim.git
     <span class="fu">dest:</span> /home/vagrant/repos/github.com/vim/vim
+  <span class="fu">register:</span> result
 
 <span class="kw">-</span> <span class="fu">name:</span> build vim
   <span class="fu">become:</span> yes
@@ -363,11 +361,19 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
     make clean
   <span class="fu">args:</span>
     <span class="fu">chdir:</span> /home/vagrant/repos/github.com/vim/vim
+  <span class="fu">when:</span> result|changed
+
+<span class="kw">-</span> <span class="fu">name:</span> check loading setting of luajit
+  <span class="fu">shell:</span> test -f /etc/ld.so.conf.d/luajit.conf
+  <span class="fu">register:</span> result
+  <span class="fu">ignore_errors:</span> true
+  <span class="fu">changed_when:</span> false
 
 <span class="kw">-</span> <span class="fu">name:</span> add loading setting of luajit
   <span class="fu">shell:</span> |
     echo <span class="st">&quot;/usr/local/lib/&quot;</span> &gt; /etc/ld.so.conf.d/luajit.conf
     ldconfig
+  <span class="fu">when:</span> result|failed
 
 <span class="kw">-</span> <span class="fu">name:</span> clone repository of neobundle.vim
   <span class="fu">become:</span> yes
@@ -428,10 +434,8 @@ $ vagrant up</code></pre>
 <div id="todo" class="slide section level1">
 <h1>TODO</h1>
 <ul class="incremental">
-<li>リポジトリのクローン時に変更がなかった場合は、ビルドしたくない</li>
 <li>ユーザー名やgitリポジトリのクローン先を変数にして、VPSなどVagrant以外のセットアップにも使えるようにしたい</li>
 <li>Serverspecで構成をテストしたい</li>
-<li>特に時間短縮のためにも、ビルドしなくていいときにはビルドしないようにしたいけれど、誰かいい方法を知っていたら教えてください。</li>
 </ul>
 </div>
 <div id="まとめ" class="slide section level1">

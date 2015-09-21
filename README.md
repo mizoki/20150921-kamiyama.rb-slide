@@ -28,7 +28,7 @@ date: September 21, 2015
   </ul>
   <li>Virtualbox</li>
   <ul>
-  <li>[https://www.virtualbox.org/wiki/Downloads](https://www.virtualbox.org/wiki/Downloads)</li>
+  <li>[https://www.virtualbox.org/](https://www.virtualbox.org/)</li>
   </ul>
   <li>Vagrant</li>
   <ul>
@@ -128,24 +128,19 @@ ansible-playbook
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://atlas.hashicorp.com/search.
+  # CentOS 7を利用
+  # https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm
   config.vm.box = "puppetlabs/centos-7.0-64-nocm"
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  config.vm.network "private_network", ip: "192.168.33.10"
-
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+  # WindowsからAnsibleの設定ファイルが見えるように共有フォルダを設定する
   config.vm.synced_folder "../../vagrant-centos", "/ansible", mount_options: ["dmode=755","fmode=644"]
 
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
+  # 標準でメモリが512MBしかないので、4GBに変更
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "4096"
+  end
+
+  # AnsibleのインストールとAnsibleの実行
   config.vm.provision "shell", inline: <<-SHELL
     if ! [ `which ansible` ]; then
       yum update -y
@@ -157,7 +152,7 @@ Vagrant.configure(2) do |config|
 end
 ```
 
-# Ansibleの設定
+# Ansibleの設定ファイル
 
 ## playbook.yml
 
@@ -232,11 +227,13 @@ rolesの中身をいくつか紹介します。
   git:
     repo: http://luajit.org/git/luajit-2.0.git
     dest: /home/vagrant/local/src/luajit-2.0
+  register: result
 
 - name: build luajit
   shell: make && make install
   args:
     chdir: /home/vagrant/local/src/luajit-2.0
+  when: result|changed
 
 - name: clone repository of my dotfiles
   become: yes
@@ -248,8 +245,8 @@ rolesの中身をいくつか紹介します。
 - name: check zshrc
   shell: test -f /home/vagrant/.zshrc
   register: result
-  ignore_errors: true
-  changed_when: false
+  ignore_errors: true # エラーでも処理を中断しない
+  changed_when: false # ステータスがchangedになる条件の指定(falseの場合は常にokになる)
 
 - name: add symbolic link of my dotfiles
   become: yes
@@ -257,7 +254,7 @@ rolesの中身をいくつか紹介します。
   shell: /home/vagrant/repos/github.com/mizoki/dotfiles/setup.sh
   when: result|failed
   args:
-    chdir: /home/vagrant/repos/github.com/mizoki/dotfiles
+    chdir: /home/vagrant/repos/github.com/mizoki/dotfiles   # カレントディレクトリの変更
 
 - name: check setting of $PATH
   shell: cat /home/vagrant/.zshenv | grep -q 'export PATH=/home/vagrant/local/bin:$PATH'
@@ -293,6 +290,7 @@ rolesの中身をいくつか紹介します。
   git:
     repo: https://github.com/vim/vim.git
     dest: /home/vagrant/repos/github.com/vim/vim
+  register: result
 
 - name: build vim
   become: yes
@@ -318,11 +316,19 @@ rolesの中身をいくつか紹介します。
     make clean
   args:
     chdir: /home/vagrant/repos/github.com/vim/vim
+  when: result|changed
+
+- name: check loading setting of luajit
+  shell: test -f /etc/ld.so.conf.d/luajit.conf
+  register: result
+  ignore_errors: true
+  changed_when: false
 
 - name: add loading setting of luajit
   shell: |
     echo "/usr/local/lib/" > /etc/ld.so.conf.d/luajit.conf
     ldconfig
+  when: result|failed
 
 - name: clone repository of neobundle.vim
   become: yes
@@ -416,10 +422,8 @@ $ vagrant reload
 
 # TODO
 
-- リポジトリのクローン時に変更がなかった場合は、ビルドしたくない
 - ユーザー名やgitリポジトリのクローン先を変数にして、VPSなどVagrant以外のセットアップにも使えるようにしたい
 - Serverspecで構成をテストしたい
-- 特に時間短縮のためにも、ビルドしなくていいときにはビルドしないようにしたいけれど、誰かいい方法を知っていたら教えてください。
 
 # まとめ
 
