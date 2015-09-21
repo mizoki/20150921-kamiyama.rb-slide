@@ -132,7 +132,7 @@ Vagrant.configure(2) do |config|
   # https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm
   config.vm.box = "puppetlabs/centos-7.0-64-nocm"
 
-  # WindowsからAnsibleの設定ファイルが見えるように共有フォルダを設定する
+  # WindowsのAnsibleの設定ファイルが見えるように共有フォルダを設定する
   config.vm.synced_folder "../../vagrant-centos", "/ansible", mount_options: ["dmode=755","fmode=644"]
 
   # 標準でメモリが512MBしかないので、4GBに変更

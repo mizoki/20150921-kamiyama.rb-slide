@@ -190,7 +190,7 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
   <span class="co"># https://atlas.hashicorp.com/puppetlabs/boxes/centos-7.0-64-nocm</span>
   config.vm.box = <span class="st">&quot;puppetlabs/centos-7.0-64-nocm&quot;</span>
 
-  <span class="co"># WindowsからAnsibleの設定ファイルが見えるように共有フォルダを設定する</span>
+  <span class="co"># WindowsのAnsibleの設定ファイルが見えるように共有フォルダを設定する</span>
   config.vm.synced_folder <span class="st">&quot;../../vagrant-centos&quot;</span>, <span class="st">&quot;/ansible&quot;</span>, <span class="st">mount_options: </span>[<span class="st">&quot;dmode=755&quot;</span>,<span class="st">&quot;fmode=644&quot;</span>]
 
   <span class="co"># 標準でメモリが512MBしかないので、4GBに変更</span>
