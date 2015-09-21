@@ -382,6 +382,54 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
     <span class="fu">repo:</span> https://github.com/Shougo/neobundle.vim.git
     <span class="fu">dest:</span> /home/vagrant/.vim/bundle/neobundle.vim</code></pre></div>
 </div>
+<div id="rolesrubytasksmain.yml" class="slide section level1">
+<h1>roles/ruby/tasks/main.yml</h1>
+<p>次にいよいよRubyのインストールについてです。</p>
+<div class="sourceCode"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span class="kw">-</span> <span class="fu">name:</span> clone repository of rbenv
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">git:</span>
+    <span class="fu">repo:</span> https://github.com/sstephenson/rbenv.git
+    <span class="fu">dest:</span> /home/vagrant/.rbenv
+
+<span class="kw">-</span> <span class="fu">name:</span> clone repository of ruby-build
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">git:</span>
+    <span class="fu">repo:</span> https://github.com/sstephenson/ruby-build.git
+    <span class="fu">dest:</span> /home/vagrant/.rbenv/plugins/ruby-build
+
+<span class="kw">-</span> <span class="fu">name:</span> check setting of rbenv
+  <span class="fu">shell:</span> cat /home/vagrant/.zshenv | grep -q &quot;rbenv init&quot;
+  <span class="fu">register:</span> result
+  <span class="fu">ignore_errors:</span> true
+  <span class="fu">changed_when:</span> false
+
+<span class="kw">-</span> <span class="fu">name:</span> initial setting of rbenv
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">shell:</span> |
+    echo <span class="st">&#39;&#39;</span> &gt;&gt; /home/vagrant/.zshenv
+    echo <span class="st">&#39;# rbenv settings&#39;</span> &gt;&gt; /home/vagrant/.zshenv
+    <span class="fu">echo &#39;export PATH=&quot;$HOME/.rbenv/bin:</span>$PATH&quot;&#39; &gt;&gt; /home/vagrant/.zshenv
+    echo <span class="st">&#39;eval &quot;$(rbenv init -)&quot;&#39;</span> &gt;&gt; /home/vagrant/.zshenv
+    source /home/vagrant/.zshenv
+  <span class="fu">when:</span> result|failed
+
+<span class="kw">-</span> <span class="fu">name:</span> check ruby is installed
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">shell:</span> rbenv versions | greq -q &quot;2.2.3&quot;
+  <span class="fu">register:</span> result
+  <span class="fu">ignore_errors:</span> true
+  <span class="fu">changed_when:</span> false
+
+<span class="kw">-</span> <span class="fu">name:</span> install ruby 2.2.3
+  <span class="fu">become:</span> yes
+  <span class="fu">become_user:</span> vagrant
+  <span class="fu">shell:</span> rbenv install 2.2.3
+  <span class="fu">when:</span> result|failed</code></pre></div>
+</div>
 <div id="はまったところ" class="slide section level1">
 <h1>はまったところ</h1>
 <h2 id="windowsでは共有フォルダへのアクセス権が777になる">Windowsでは、共有フォルダへのアクセス権が777になる</h2>

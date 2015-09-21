@@ -338,6 +338,57 @@ rolesの中身をいくつか紹介します。
     dest: /home/vagrant/.vim/bundle/neobundle.vim
 ```
 
+# roles/ruby/tasks/main.yml
+
+次にいよいよRubyのインストールについてです。
+
+```yaml
+- name: clone repository of rbenv
+  become: yes
+  become_user: vagrant
+  git:
+    repo: https://github.com/sstephenson/rbenv.git
+    dest: /home/vagrant/.rbenv
+
+- name: clone repository of ruby-build
+  become: yes
+  become_user: vagrant
+  git:
+    repo: https://github.com/sstephenson/ruby-build.git
+    dest: /home/vagrant/.rbenv/plugins/ruby-build
+
+- name: check setting of rbenv
+  shell: cat /home/vagrant/.zshenv | grep -q "rbenv init"
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: initial setting of rbenv
+  become: yes
+  become_user: vagrant
+  shell: |
+    echo '' >> /home/vagrant/.zshenv
+    echo '# rbenv settings' >> /home/vagrant/.zshenv
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> /home/vagrant/.zshenv
+    echo 'eval "$(rbenv init -)"' >> /home/vagrant/.zshenv
+    source /home/vagrant/.zshenv
+  when: result|failed
+
+- name: check ruby is installed
+  become: yes
+  become_user: vagrant
+  shell: rbenv versions | greq -q "2.2.3"
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: install ruby 2.2.3
+  become: yes
+  become_user: vagrant
+  shell: rbenv install 2.2.3
+  when: result|failed
+```
+
 # はまったところ
 
 ## Windowsでは、共有フォルダへのアクセス権が777になる
