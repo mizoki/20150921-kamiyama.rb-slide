@@ -302,7 +302,7 @@ $ vagrant destroy # 仮想マシンの削除</code></pre>
   <span class="fu">shell:</span> /home/vagrant/repos/github.com/mizoki/dotfiles/setup.sh
   <span class="fu">when:</span> result|failed
   <span class="fu">args:</span>
-    <span class="fu">chdir:</span> /home/vagrant/repos/github.com/mizoki/dotfiles   <span class="co"># カレントディレクトリの変更</span>
+    <span class="fu">chdir:</span> /home/vagrant/repos/github.com/mizoki/dotfiles
 
 <span class="kw">-</span> <span class="fu">name:</span> check setting of $PATH
   <span class="fu">shell:</span> cat /home/vagrant/.zshenv | grep -q &#39;export PATH=/home/vagrant/local/bin:$PATH&#39;

@@ -254,7 +254,7 @@ rolesの中身をいくつか紹介します。
   shell: /home/vagrant/repos/github.com/mizoki/dotfiles/setup.sh
   when: result|failed
   args:
-    chdir: /home/vagrant/repos/github.com/mizoki/dotfiles   # カレントディレクトリの変更
+    chdir: /home/vagrant/repos/github.com/mizoki/dotfiles
 
 - name: check setting of $PATH
   shell: cat /home/vagrant/.zshenv | grep -q 'export PATH=/home/vagrant/local/bin:$PATH'
