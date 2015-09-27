@@ -377,7 +377,7 @@ rolesの中身をいくつか紹介します。
 - name: check ruby is installed
   become: yes
   become_user: vagrant
-  shell: rbenv versions | greq -q "2.2.3"
+  shell: export RBENV_ROOT=/home/vagrant/.rbenv; export PATH=$RBENV_ROOT/bin:$PATH; echo N | rbenv versions | grep -q "2.2.3"
   register: result
   ignore_errors: true
   changed_when: false
@@ -385,7 +385,7 @@ rolesの中身をいくつか紹介します。
 - name: install ruby 2.2.3
   become: yes
   become_user: vagrant
-  shell: rbenv install 2.2.3
+  shell: export RBENV_ROOT=/home/vagrant/.rbenv; export PATH=$RBENV_ROOT/bin:$PATH; echo N | rbenv install 2.2.3
   when: result|failed
 ```
 
